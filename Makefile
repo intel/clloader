@@ -8,7 +8,7 @@ BOARD_NAME=galileo
 endif
 
 GALILEO_TGT_LOADER= clloader
-GALILEO_TGT_RESET_HANDLER= galileo_sketch_reset
+GALILEO_TGT_RESET_HANDLER= sketch_reset
 
 SRC =  crctab.c clloader.c  lsyslog.c   protname.c  rbsb.c   timing.c  zm.c  zperr.c  tcp.c zreadline.c  xstrtoul.c canit.c long-options.c
 
@@ -22,7 +22,7 @@ else
 CFLAGS=-I$(IDIR) -I$(IDIR)/../ -I../lib   -D_XOPEN_SOURCE  -DNFGVMIN -DHAVE_CONFIG_H -DCLANTON_LOADER -g -Wall  -std=c99  -Os  -ffunction-sections
 endif
 
-all: clloader galileo_sketch_reset
+all: clloader sketch_reset
 
 ODIR=.
 LIBS=
@@ -49,7 +49,7 @@ RST_OBJ = $(patsubst %,$(RST_ODIR)/%,$(_RST_OBJ))
 $(RST_ODIR)/%.o: %.c $(RST_DEPEND)
 	$(CC) -c -o $@ $< $(CFLAGS) $(CFLAGS_EXTRA)
 
-galileo_sketch_reset: $(RST_OBJ)
+sketch_reset: $(RST_OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean

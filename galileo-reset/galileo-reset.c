@@ -38,8 +38,9 @@ int main(int argc, char * argv[])
     int Verbose=0;
     int arg;
     int input_gpio = -1, output_gpio = -1;
+    char *reset_script_path = NULL;
 
-    while ((arg = getopt(argc, argv, ":vi:o:")) != -1) {
+    while ((arg = getopt(argc, argv, ":vi:o:s:")) != -1) {
 	    switch (arg) {
 	    case 'i':
 		    /* Set the GPIO for reset input signal from shield */
@@ -48,6 +49,10 @@ int main(int argc, char * argv[])
 	    case 'o':
 		    /* Set the GPIO for reset output signal to shield */
 		    output_gpio = atoi(optarg);
+		    break;
+	    case 's':
+		    /* Set the sketch reset script path */
+		    reset_script_path = optarg;
 		    break;
 	    case 'v':
 		    Verbose++;
@@ -63,6 +68,14 @@ int main(int argc, char * argv[])
     }
     if (output_gpio < 0){
 	    printf("Shield reset output GPIO invalid or not specified (%d)\n", output_gpio);
+	    exit(1);
+    }
+    if (reset_script_path == NULL){
+	    printf("Reset script path not specified\n");
+	    exit(1);
+    }
+    if (access(reset_script_path, X_OK) < 0){
+	    printf("Invalid reset script path specified: %s\n", strerror(errno));
 	    exit(1);
     }
 
@@ -177,8 +190,8 @@ int main(int argc, char * argv[])
 			     else {
 				reset_active = 0; 
     				if (Verbose)
-				    printf("Sketch Reset button released: Calling %s\n",SKETCH_RESET_RELEASE_SCRIPT);
-				system(SKETCH_RESET_RELEASE_SCRIPT);
+				    printf("Sketch Reset button released: Calling %s\n", reset_script_path);
+				system(reset_script_path);
 			     }
 			}
         }
