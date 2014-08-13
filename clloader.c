@@ -2720,8 +2720,14 @@ int clantonLoaderFSM(int argc, char * argv[])
 						// cable is probably gone here so just close the file it will reopen back at top
 						ret = close(mystate.tty_from_host);
 						fprintf(stderr, "Bad connection to host  %d bytes available, ioctl return is %d\n",rd_bytes, ioctl_rc) ;
-						mystate.tty_from_host = -1 ;	
+						mystate.tty_from_host = -1 ;
+						fprintf(stderr, "cable was probably disconnected\n");
+						//kill sketch then kill clloader. Launcher will restart clloader and sketch
+						kill(mystate.slave_pid, SIGTERM);
+						exit(0);
 					}else{
+						fprintf(stderr, "host: %s\n", rbuf_from_host);
+						errors = 0;
 						/* TODO: bring out state change of BAUD/LINE and replace magic string */
 						if (strncmp(CL_LOADER_CMD_HOST_START_DOWNLOAD_CMD,
 							rbuf_from_host,
