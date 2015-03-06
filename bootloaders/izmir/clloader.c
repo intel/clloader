@@ -2722,19 +2722,22 @@ int clantonLoaderFSM(int argc, char * argv[])
 						fprintf(stderr, "Bad connection to host  %d bytes available, ioctl return is %d\n",rd_bytes, ioctl_rc) ;
 						mystate.tty_from_host = -1 ;	
 						fprintf(stderr, "cable was probably disconnected\n");
-						//kill sketch then kill clloader
+						//kill sketch then kill clloader. Launcher will restart clloader and sketch
 						kill(mystate.slave_pid, SIGTERM);
 						exit(0);
 					}else{
 						fprintf(stderr, "host: %s\n", rbuf_from_host);
 						errors = 0;
 						/* TODO: bring out state change of BAUD/LINE and replace magic string */
-						if (strncmp(CL_LOADER_CMD_HOST_START_DOWNLOAD_CMD,
-							rbuf_from_host,
-							(size_t)strlen(CL_LOADER_CMD_HOST_START_DOWNLOAD_CMD)) == 0) {
+						if (strncmp(downloadCMD, rbuf_from_host,
+							((size_t)strlen(rbuf_from_host)-1)) == 0) {
 							// We got a special command to start download
 							 clantonLeavePassThroughState = TRUE;
-
+						} else if (strncmp(CL_LOADER_CMD_HOST_START_DOWNLOAD_CMD,
+							rbuf_from_host,
+							((size_t)strlen(rbuf_from_host)-1)) == 0) {	
+							// Old command string. Allow to download anyway.
+							 clantonLeavePassThroughState = TRUE;
 						} else {
 							write(mystate.tty_slave,rbuf_from_host,ret); //todo check write status
 						}
