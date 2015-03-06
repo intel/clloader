@@ -2754,7 +2754,7 @@ int clantonLoaderFSM(int argc, char * argv[])
 				if ( Verbose) {
 					fprintf(stderr,"HUP or CHLDTERM Received, Change state to wait for command from host\n");
 				}
-
+				sleep(1);
 				/* Terminate the child sketch process */
 				/* todo: send a shutdown signal for a more graceful termination */
 				if ( mystate.slave_pid) {
